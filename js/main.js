@@ -1,7 +1,7 @@
-import config from  '../config.json';
+import config from  '~/config.json';
 import contentful from 'contentful';
-import convertExcelToContentfulObject from '../js/convertExcelToContenfulObject';
-import readExcel from '../js/readExcel';
+import {readExcel} from '../js/readExcel';
+const XLSX = require('xlsx');
 
 var client = contentful.createClient({
   space: config.contentfulSpace,
@@ -10,6 +10,10 @@ var client = contentful.createClient({
 
 client.sync({initial: true})
 .then((response) => {
-  console.log(response.entries)
-  console.log(response.assets)
+  // was working individually. The readExcel is just not getting the excel sheet properly
+  const responseObj = JSON.parse(response.stringifySafe());
+  const entries = responseObj.entries;
+  console.log("\n ~~~~~~~~~~~~~~~~ entries[20]: ", entries[20]);
+  
+  console.log("readExcel; ", readExcel());
 })
