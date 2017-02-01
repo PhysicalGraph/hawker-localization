@@ -1,19 +1,14 @@
-import config from  '~/config.json';
-import contentful from 'contentful';
-import {readExcel} from '../js/readExcel';
-const XLSX = require('xlsx');
+const pathToFile1 = 'excelDocs/Turkish\ -with\ SL\ mapping\ keyword.xlsx';
+const pathToFile2 = 'excelDocs/testSheet.xlsx';
+const pathToFile3 = 'excelDocs/completeTestSheet.xlsx';
+const pathToFile4 = 'excelDocs/testTestLocaleCodes.xlsx'
+import XLSX from 'xlsx';
 
-var client = contentful.createClient({
-  space: config.contentfulSpace,
-  accessToken: config.contentfulToken
-})
+import { convertExcelToContentfulObject } from '../js/convertExcelToContentfulObject';
 
-client.sync({initial: true})
-.then((response) => {
-  // was working individually. The readExcel is just not getting the excel sheet properly
-  const responseObj = JSON.parse(response.stringifySafe());
-  const entries = responseObj.entries;
-  console.log("\n ~~~~~~~~~~~~~~~~ entries[20]: ", entries[20]);
-  
-  console.log("readExcel; ", readExcel());
-})
+let readExcel = () => {
+  let workbook = XLSX.readFile(pathToFile4);
+  convertExcelToContentfulObject(workbook);
+}
+
+readExcel()

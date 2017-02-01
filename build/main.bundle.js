@@ -1,29 +1,22 @@
 'use strict';
 
-var _config = require('../config.json');
+var _xlsx = require('xlsx');
 
-var _config2 = _interopRequireDefault(_config);
+var _xlsx2 = _interopRequireDefault(_xlsx);
 
-var _contentful = require('contentful');
-
-var _contentful2 = _interopRequireDefault(_contentful);
-
-var _readExcel = require('../js/readExcel');
+var _convertExcelToContentfulObject = require('../js/convertExcelToContentfulObject');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var XLSX = require('xlsx');
+var pathToFile1 = 'excelDocs/Turkish\ -with\ SL\ mapping\ keyword.xlsx';
+var pathToFile2 = 'excelDocs/testSheet.xlsx';
+var pathToFile3 = 'excelDocs/completeTestSheet.xlsx';
+var pathToFile4 = 'excelDocs/testTestLocaleCodes.xlsx';
 
-var client = _contentful2.default.createClient({
-  space: _config2.default.contentfulSpace,
-  accessToken: _config2.default.contentfulToken
-});
 
-client.sync({ initial: true }).then(function (response) {
-  // was working individually. The readExcel is just not getting the excel sheet properly
-  var responseObj = JSON.parse(response.stringifySafe());
-  var entries = responseObj.entries;
-  console.log("\n ~~~~~~~~~~~~~~~~ entries[20]: ", entries[20]);
+var readExcel = function readExcel() {
+  var workbook = _xlsx2.default.readFile(pathToFile4);
+  (0, _convertExcelToContentfulObject.convertExcelToContentfulObject)(workbook);
+};
 
-  console.log("readExcel; ", (0, _readExcel.readExcel)());
-});
+readExcel();
