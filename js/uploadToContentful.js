@@ -5,11 +5,11 @@ import contentful from 'contentful-management';
 export function uploadToContentful(deviceInfoToUpdate) {
 
   var client = contentful.createClient({
-    accessToken: config.contentfulManagementToken
+    accessToken: config.uploadToContentfulManagementToken
   })
 
 
-  client.getSpace(config.contentfulSpace)
+  client.getSpace(config.uploadToContentfulSpace)
   .then((space) => {
     setTimeout(() => {
       space.getEntry(deviceInfoToUpdate.deviceEntryID)
@@ -25,10 +25,7 @@ export function uploadToContentful(deviceInfoToUpdate) {
           }
         }
         entry.update()
-        .then((updatedContentType, err) => {
-          if (err) {
-            console.log("There was an error!!: ", err);
-          }
+        .then((updatedContentType) => {
           console.log('Update was successful')
         })
       })

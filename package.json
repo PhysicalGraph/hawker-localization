@@ -4,7 +4,8 @@
   "description": "Automatic localization of translated content",
   "main": "getContentful.js",
   "scripts": {
-    "babel": "babel --presets es2015 js/main.js -o build/main.bundle.js"
+    "babel": "babel --presets es2015 js/main.js -o build/main.bundle.js",
+    "cloneToNewSpace": "babel-node js/cloneToNewSpace.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +19,12 @@
   "homepage": "https://github.com/PhysicalGraph/hawker-localization#readme",
   "dependencies": {
     "align-text": "^0.1.4",
+    "chalk": "^1.1.3",
     "contentful": "^3.8.0",
+    "contentful-export": "^2.3.0",
+    "contentful-import": "^2.4.0",
     "contentful-management": "^1.3.1",
+    "contentful-publication": "^0.9.0",
     "xlsx": "^0.8.1"
   },
   "devDependencies": {
