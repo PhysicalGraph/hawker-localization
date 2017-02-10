@@ -5,7 +5,8 @@
   "main": "getContentful.js",
   "scripts": {
     "babel": "babel --presets es2015 js/main.js -o build/main.bundle.js",
-    "cloneToNewSpace": "babel-node js/cloneToNewSpace.js"
+    "cloneToNewSpace": "babel-node js/cloneToNewSpace.js",
+    "compareSpaces": "babel-node js/compareSpaces.js"
   },
   "repository": {
     "type": "git",
