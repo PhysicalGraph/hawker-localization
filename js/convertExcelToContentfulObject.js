@@ -1,8 +1,15 @@
 import {uploadToContentful} from '../js/uploadToContentful'
 import config from  '~/config.json';
+import contentful from 'contentful-management';
 
 
 let convertExcelToContentfulObject = (readExcelDoc) => {
+  var client = contentful.createClient({
+    accessToken: config.uploadToContentfulManagementToken
+  })
+
+  client.getSpace(config.uploadToContentfulSpace)
+  .then((space) => {
 
   const allSheetsObject = readExcelDoc["Sheets"];
   const sheetNameArray = Object.keys(allSheetsObject)
@@ -19,7 +26,8 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
     const firstRowLetters = []
 
     // loops over all single letters (A - Z)
-    for (var singleLetterIndex = 0; singleLetterIndex <= 26; singleLetterIndex++) {
+    let singleLetterLength = allLetterNumberEntries.length >= 26 ? 26 : allLetterNumberEntries.length -1;
+    for (var singleLetterIndex = 0; singleLetterIndex <= singleLetterLength; singleLetterIndex++) {
       let currentTargetKey = allLetterNumberEntries[singleLetterIndex]
       if (currentTargetKey.length < 3) {
         if (currentTargetKey[1] === '1') {
@@ -138,10 +146,14 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
         }
       }
       setTimeout(() => {
-        uploadToContentful(deviceInfoToUpdate)
+        uploadToContentful(deviceInfoToUpdate, space)
       }, 200)
     }
   }
+})
+.catch((err) => {
+  console.log('Err in getting the space: ', err)
+})
 }
 
 export { convertExcelToContentfulObject }
