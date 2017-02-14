@@ -6,7 +6,8 @@
   "scripts": {
     "babel": "babel --presets es2015 js/main.js -o build/main.bundle.js",
     "cloneToNewSpace": "babel-node js/cloneToNewSpace.js",
-    "compareSpaces": "babel-node js/compareSpaces.js"
+    "compareSpaces": "babel-node js/compareSpaces.js",
+    "deleteAllEntries": "babel-node js/deleteAllEntries.js"
   },
   "repository": {
     "type": "git",

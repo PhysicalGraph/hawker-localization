@@ -36,7 +36,7 @@ let compareEntries = (allValidatedEntries, allTestEntries) => {
   // first test if there are the same # of entries
   if (allValidatedEntries.length != allTestEntries.length) {
     testResults.sameLength.result = false;
-    // console.log('findMissingEntries: ', findMissingEntries(validatedIdFieldMap, testIdFieldMap));
+    console.log('findMissingEntries: ');
     findMissingEntries(validatedIdFieldMap, testIdFieldMap);
   }
 
@@ -60,15 +60,15 @@ let compareEntries = (allValidatedEntries, allTestEntries) => {
     // missing keys are caught in the pervious test
     let differentEntryFields = {};
     differentEntryFields[entryId] = {};
-    if (testEntryKeys.indexOf(testKey) != -1) {
-      let validatedEntryField = JSON.stringify(validatedIdFieldMap[entryId][testKey])
-      let testEntryField = JSON.stringify(testIdFieldMap[entryId][testKey])
-      // compares the value of each entry
-      if (validatedEntryField !== testEntryField) {
-        differentEntryFields[entryId].validatedEntry = validatedIdFieldMap[entryId][testKey]
-        differentEntryFields[entryId].testEntry = testIdFieldMap[entryId][testKey]
-        testResults.sameFields.result = false;
-        testResults.sameFields.differingEntryFields.push(differentEntryFields)
+    if (testEntryKeys.indexOf(validatedEntry) != -1) {
+      for (var i = 0; i < validatedEntryKeys.length; i++) {
+        let currentKey = validatedEntryKeys[i];
+        if (validatedIdFieldMap[entryId][currentKey] != testIdFieldMap[entryId][currentKey]) {
+          differentEntryFields[entryId].validatedEntry = validatedIdFieldMap[entryId][testKey]
+          differentEntryFields[entryId].testEntry = testIdFieldMap[entryId][testKey]
+          testResults.sameFields.result = false;
+          testResults.sameFields.differingEntryFields.push(differentEntryFields)
+        }
       }
     }
   }
