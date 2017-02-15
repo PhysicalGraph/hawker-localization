@@ -32,13 +32,14 @@ Make config.json file on the root with this template
 - The excel sheet must contain 'fieldID', 'entryID', and 'message' within these 6 columns
 - Specify the proper spaces in the config file
 - To run: **npm run uploadContent**
+- to run **npm run uploadContent**
 
 ## To compare the two spaces
 - This will compare all entries from the cloned space, to the 'upload space'
 - At first, the newly created generated from 'cloneToNewSpace' will not have a spaceID or token
 - To generate these, go into the space and click on APIs in the navigation panel
 - To run **npm run compareSpaces**
-- This will ouput a stringified json with the test results
+- This will output a stringified json with the test results
 - Suggested to use a json parser tool to view these results
 - TODO: Make a better visualization of these results
 
