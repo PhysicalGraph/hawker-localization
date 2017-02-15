@@ -137,9 +137,11 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
                 localeInfoToUpdate.translation = newlineTranslation;
               }
             }
-
             if (deviceInfoToUpdate.deviceEntryID === undefined) {
               deviceInfoToUpdate.deviceEntryID = localeInfoToUpdate.entryID;
+            }
+            if (deviceInfoToUpdate.message === undefined) {
+              deviceInfoToUpdate.message = localeInfoToUpdate.message;
             }
             deviceInfoToUpdate[currentLocale] = localeInfoToUpdate;
           }

@@ -8,7 +8,8 @@ export function uploadToContentful(deviceInfoToUpdate, uploadSpace, rowIndex) {
       uploadSpace.getEntry(deviceInfoToUpdate.deviceEntryID)
       .then((entry) => {
         for (let locale in deviceInfoToUpdate) {
-          if (locale.toString() != 'deviceEntryID') {
+          let testLocale = locale.toString();
+          if (testLocale !== 'deviceEntryID' && testLocale !== 'message') {
             let currentLocale = deviceInfoToUpdate[locale]
             let currentLocaleCode = currentLocale.locale.replace(/_/g, "-").toString();
             let translationMessage = currentLocale.translation;
@@ -16,6 +17,9 @@ export function uploadToContentful(deviceInfoToUpdate, uploadSpace, rowIndex) {
             let fieldToUpdate = currentLocale["fieldID"].toString();
             if (entry.fields[fieldToUpdate] === undefined) {
               entry.fields[fieldToUpdate] = {};
+            }
+            if (entry.fields[fieldToUpdate]['en-US'] === undefined) {
+              entry.fields[fieldToUpdate]['en-US'] = deviceInfoToUpdate.message;
             }
             entry.fields[fieldToUpdate][currentLocaleCode] = translationMessage;
           }
@@ -32,10 +36,9 @@ export function uploadToContentful(deviceInfoToUpdate, uploadSpace, rowIndex) {
       catch((err) => {
         if (err.message = "The resource could not be found") {
           console.log('\n ****************** Could not find device with ID: ', deviceInfoToUpdate.deviceEntryID)
-          console.log('\n ****************** There was an err in getting an item! for deviceInfoToUpdate: ', err)
+          console.log('\n ****************** The error is: ', err)
         } else {
-          console.log('\n ****************** There was an err in getting an item! for deviceInfoToUpdate: ', err)
-          console.log('\n ****************** deviceInfoToUpdate: ', JSON.stringify(deviceInfoToUpdate))
+          console.log('\n ****************** Unhandled error: ', err)
         }
       })
     }, waitTime)
