@@ -13,9 +13,12 @@ let cloneToNewSpace = () => {
   let cloneFromOptions = {
     spaceId: config.cloneFromContentfulSpace,
     managementToken: config.uploadToContentfulManagementToken,
+    rateLimit : 1,
+    maxAllowedLimit: 1,
+    rateLimitPeriod: 5000
   }
 
-  let uploadSpaceName = 'New Test Space'
+  let uploadSpaceName = 'localizationTest'
 
   // *** Where everthing is kicked off ***
   client.getSpaces()
@@ -72,12 +75,22 @@ let cloneToNewSpace = () => {
   let uploadContentToNewSpace = (newSpace) => {
     spaceExport(cloneFromOptions)
     .then((output) => {
+      return new Promise((resolve, reject) => {
+        if (output) {
+          return setTimeout(resolve(output), 1000);
+        } else {
+          return reject(new Error("No output"))
+        }
+      })
+    })
+    .then((output) => {
       console.log(chalk.green('\n Cloned space content found \n'))
       let uploadOptions = {
         content: output,
         spaceId: newSpace.sys.id,
         managementToken: config.uploadToContentfulManagementToken
       }
+
       spaceImport(uploadOptions)
       .then((finalOutput) => {
         console.log(chalk.green('\n *** All Data Imported successfully *** \n'))
@@ -87,9 +100,9 @@ let cloneToNewSpace = () => {
       })
     })
     .catch((err) => {
+      console.log(chalk.red('uploadContentToNewSpace err: ', err));
       if (err.message = "The resource could not be found.") {
-        console.log(chalk.red('The space could not be found. Making a new one'));
-        uploadNewContent()
+        console.log(chalk.red('The space could not be found.'));
       }
     })
   }
