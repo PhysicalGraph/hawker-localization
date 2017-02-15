@@ -1,10 +1,10 @@
-const pathToFile1 = 'excelDocs/Consolidated.xlsx';
+const pathToFile = 'excelDocs/finalFinal.xlsx';
 import XLSX from 'xlsx';
 
 import { convertExcelToContentfulObject } from '../js/convertExcelToContentfulObject';
 
 let readExcel = () => {
-  let workbook = XLSX.readFile(pathToFile1);
+  let workbook = XLSX.readFile(pathToFile);
   convertExcelToContentfulObject(workbook);
 }
 
