@@ -8,30 +8,30 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
     accessToken: config.uploadToContentfulManagementToken
   })
 
-
   client.getSpace(config.uploadToContentfulSpace)
-  .then((uploadSpace) => {
-    const allSheetsObject = readExcelDoc["Sheets"];
-    const sheetNameArray = Object.keys(allSheetsObject)
-    const numberOfSheets = sheetNameArray.length;
+  .then((space) => {
 
-    // this will go over each sheet
-    for (var sheetIndex = 0; sheetIndex < numberOfSheets; sheetIndex++) {
-      let currentSheetName = sheetNameArray[sheetIndex]
-      let currentSheet = allSheetsObject[currentSheetName]
+  const allSheetsObject = readExcelDoc["Sheets"];
+  const sheetNameArray = Object.keys(allSheetsObject)
+  const numberOfSheets = sheetNameArray.length;
 
-      // 'A1 -> Z1 and An -> Zn'
-      const allLetterNumberEntries = Object.keys(currentSheet)
-      // might have to split this for locales
-      const firstRowLetters = []
+  // this will go over each sheet
+  for (var sheetIndex = 0; sheetIndex < numberOfSheets; sheetIndex++) {
+    let currentSheetName = sheetNameArray[sheetIndex]
+    let currentSheet = allSheetsObject[currentSheetName]
 
-      // loops over all single letters (A - Z)
-      for (var singleLetterIndex = 0; singleLetterIndex <= 26; singleLetterIndex++) {
-        let currentTargetKey = allLetterNumberEntries[singleLetterIndex]
-        if (currentTargetKey.length < 3) {
-          if (currentTargetKey[1] === '1') {
-            firstRowLetters.push(currentTargetKey[0])
-          }
+    // 'A1 -> Z1 and An -> Zn'
+    const allLetterNumberEntries = Object.keys(currentSheet)
+    // might have to split this for locales
+    const firstRowLetters = []
+
+    // loops over all single letters (A - Z)
+    let singleLetterLength = allLetterNumberEntries.length >= 26 ? 26 : allLetterNumberEntries.length -1;
+    for (var singleLetterIndex = 0; singleLetterIndex <= singleLetterLength; singleLetterIndex++) {
+      let currentTargetKey = allLetterNumberEntries[singleLetterIndex]
+      if (currentTargetKey.length < 3) {
+        if (currentTargetKey[1] === '1') {
+          firstRowLetters.push(currentTargetKey[0])
         }
       }
 
@@ -151,7 +151,8 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
         }, 200)
       }
     }
-  })
+  }
+})
   .catch((err) => {
     console.log('There was an error in getting the space!: ', err)
   })
