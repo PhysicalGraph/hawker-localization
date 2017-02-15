@@ -5,6 +5,7 @@
   "main": "getContentful.js",
   "scripts": {
     "babel": "babel --presets es2015 js/main.js -o build/main.bundle.js",
+    "uploadContent": "babel-node build/main.bundle.js",
     "cloneToNewSpace": "babel-node js/cloneToNewSpace.js",
     "compareSpaces": "babel-node js/compareSpaces.js",
     "deleteAllEntries": "babel-node js/deleteAllEntries.js"
