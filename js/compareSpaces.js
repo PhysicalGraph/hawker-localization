@@ -1,14 +1,3 @@
-// want to go through each entry from the cloned space
-  // compare each feild from each entry to the copied space
-  // IF an entry from the copied space does not exist in the cloned space
-    // OR if a field on one of the entries does not exist on the other
-      // alert the user - this could be handled in two seperate ways
-      // either alert for the entry that is missing, or alert that a field on a specfic entry is missing
-  // OTHERWISE alert that all is good, and the space was cloned over correctly
-
-  // create an object of tests. Keys being the tests, values being results
-  // set these as you go, then in the end, read from this object
-
 import config from  '~/config.json';
 import ContentfulManagement from 'contentful-management';
 
@@ -36,7 +25,6 @@ let compareEntries = (allValidatedEntries, allTestEntries) => {
   // first test if there are the same # of entries
   if (allValidatedEntries.length != allTestEntries.length) {
     testResults.sameLength.result = false;
-    console.log('findMissingEntries: ');
     findMissingEntries(validatedIdFieldMap, testIdFieldMap);
   }
 
