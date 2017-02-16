@@ -21,6 +21,7 @@ export function uploadToContentful(deviceInfoToUpdate, uploadSpace, rowIndex) {
             if (entry.fields[fieldToUpdate]['en-US'] === undefined) {
               entry.fields[fieldToUpdate]['en-US'] = deviceInfoToUpdate.message;
             }
+
             entry.fields[fieldToUpdate][currentLocaleCode] = translationMessage;
           }
         }
@@ -30,7 +31,7 @@ export function uploadToContentful(deviceInfoToUpdate, uploadSpace, rowIndex) {
         })
         .catch((err) => {
           console.log('\n ############### UPDATING entry ERROR: ', err)
-          console.log('\n ############### entry: ', entry)
+          console.log('\n ############### deviceEntryID: ', deviceInfoToUpdate.deviceEntryID)
         })
       }).
       catch((err) => {
