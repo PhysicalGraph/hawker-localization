@@ -19,20 +19,25 @@ Make config.json file on the root with this template
 - Get your [managementToken here](https://www.contentful.com/developers/docs/references/authentication/#the-management-api) at the bottom of the page
 - 'uploadSpaceName' is the name of the space that you will be creating
 - Run **npm install** to get all node modules
-- Run **npm run babel** to build everything
+- Run **npm run babel** to build everything. This should be done after any change to the code
 
 ## To copy to a new space
 - **WARNING** this will completely remove and recreate a space with the name specified in uploadSpaceName
-- If there already exists a space with that name **THIS SPACE WILL BE ERASED** and the content will be copied from the space specified in cloneFromContentfulSpace
+- If there already exists a space with this name **THIS SPACE WILL BE ERASED** and recreated. Content will be copied to this new space from the space specified in cloneFromContentfulSpace
 - Because of Contentful's rate limits, this script had to be slowed down. Expect it to take ~30 minutes
 - To run: **npm run cloneToNewSpace**
 
 ## To run Contentful upload
 - The excel sheet must have 6 columns before the locale columns
-- The excel sheet must contain 'fieldID', 'entryID', and 'message' within these 6 columns
-- Specify the proper spaces in the config file
-- To run: **npm run uploadContent**
-- to run **npm run uploadContent**
+- The excel sheet must contain 'fieldID', 'entryID', and 'message' within these 6 columns. Their order does not matter
+- Place this excel sheet into excelDocs directory
+- Be sure all locales in this document are available in the given space. If the document has locales that are not available, or not written in the same way as they are in Contentful, the script **will not work**.
+- The script will read every sheet in the excel doc. If there is one sheet that does not conform to these standards, the script will not work. Sometimes a sheet can be hidden. Be sure to unhide all sheets to verify that they conform to these standards
+- Writing these locales with either underscores or hyphens is fine 'en_US' or 'en-US'
+- One commonly mistaken locale is Serbian Cyrillic. Commonly mistaken as 'sr-RS' the correct format is 'sr-Cyrl-RS'
+- **Be sure** to specify the correct space in the config file. If the incorrect space is written, content could be over written, or the script may just not work.
+- Add the file path to main.js then run run **npm run babel**
+- To run upload: **npm run uploadContent**
 
 ## To compare the two spaces
 - This will compare all entries from the cloned space, to the 'upload space'
