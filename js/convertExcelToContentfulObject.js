@@ -9,7 +9,7 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
   })
 
   client.getSpace(config.uploadToContentfulSpace)
-  .then((space) => {
+  .then((uploadSpace) => {
 
   const allSheetsObject = readExcelDoc["Sheets"];
   const sheetNameArray = Object.keys(allSheetsObject)
@@ -34,6 +34,7 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
           firstRowLetters.push(currentTargetKey[0])
         }
       }
+    }
 
       // loops over all double letters (AA - ZZ)
       // Starts at 27 because there are 26 letters in the alphabet
@@ -151,7 +152,6 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
         }, 200)
       }
     }
-  }
 })
   .catch((err) => {
     console.log('There was an error in getting the space!: ', err)
