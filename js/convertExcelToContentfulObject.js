@@ -45,18 +45,24 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
         }
       }
 
-      // gets the named columns per sheet
+      let nextTargetHeader = ""
       let columnNames = [];
-      let locales = [];
-      // set at 5 because that is the column where the named columns become locale colums
-      for (var rowCount = 0; rowCount < 6; rowCount++) {
-        // human redable names are stored in the sheet with the key 'v'
-        columnNames.push(currentSheet[firstRowLetters[rowCount]+'1']['v'])
+      let fixedLocales = [];
+      let index = 0;
+      // Loop here that goes over the first columns until it hits an entry with "_"
+      while (!nextTargetHeader.match(/[_]/g)) {
+        // this will indicate that it has gotten to the locales
+        columnNames.push(currentSheet[firstRowLetters[index]+'1']['v'])
+        nextTargetHeader = currentSheet[firstRowLetters[index +1]+'1']['v'];
+        index++
       }
+
+      let locales = [];
       for (var rowCount = columnNames.length; rowCount < firstRowLetters.length; rowCount++) {
         // human redable names are stored in the sheet with the key 'v'
         locales.push(currentSheet[firstRowLetters[rowCount]+'1']['v'])
       }
+
 
       const numberOfColumns = columnNames.length + locales.length;
       // AA## -> and extract the number
@@ -138,6 +144,7 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
                 localeInfoToUpdate.translation = newlineTranslation;
               }
             }
+
             if (deviceInfoToUpdate.deviceEntryID === undefined) {
               deviceInfoToUpdate.deviceEntryID = localeInfoToUpdate.entryID;
             }
