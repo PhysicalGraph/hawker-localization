@@ -11,14 +11,14 @@ let cloneToNewSpace = () => {
   })
 
   let cloneFromOptions = {
+    version: true,
     spaceId: config.cloneFromContentfulSpace,
     managementToken: config.uploadToContentfulManagementToken,
-    rateLimit : 1,
-    maxAllowedLimit: 1,
-    rateLimitPeriod: 5000
+    maxAllowedLimit: 100,
+    includeDrafts: false
   }
 
-  let uploadSpaceName = 'localizationTest'
+  let uploadSpaceName = 'newLocalizationTest'
 
   // *** Where everthing is kicked off ***
   client.getSpaces()
@@ -73,6 +73,8 @@ let cloneToNewSpace = () => {
 
   // Will upload cloned content to newly created space
   let uploadContentToNewSpace = (newSpace) => {
+    console.log(chalk.green(JSON.stringify(cloneFromOptions, null, 2)));
+    console.log("spaceExport(cloneFromOptions): ", spaceExport(cloneFromOptions))
     spaceExport(cloneFromOptions)
     .then((output) => {
       return new Promise((resolve, reject) => {

@@ -1,12 +1,13 @@
 import config from  '~/config.json';
 
 export function uploadToContentful(deviceInfoToUpdate, uploadSpace, rowIndex) {
-  let waitTime = rowIndex * 100;
+  let waitTime = rowIndex * 300;
 
   if (deviceInfoToUpdate.deviceEntryID != undefined) {
     setTimeout(() => {
       uploadSpace.getEntry(deviceInfoToUpdate.deviceEntryID)
       .then((entry) => {
+        var copiedEntry = entry;
         for (let locale in deviceInfoToUpdate) {
           let testLocale = locale.toString();
           if (testLocale !== 'deviceEntryID' && testLocale !== 'message') {
@@ -18,10 +19,8 @@ export function uploadToContentful(deviceInfoToUpdate, uploadSpace, rowIndex) {
             if (entry.fields[fieldToUpdate] === undefined) {
               entry.fields[fieldToUpdate] = {};
             }
-            if (entry.fields[fieldToUpdate]['en-US'] === undefined) {
-              entry.fields[fieldToUpdate]['en-US'] = deviceInfoToUpdate.message;
-            }
-
+            
+            entry.sys = copiedEntry.sys;
             entry.fields[fieldToUpdate][currentLocaleCode] = translationMessage;
           }
         }

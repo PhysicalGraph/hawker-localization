@@ -30,6 +30,7 @@ Make config.json file on the root with this template
 ## To run Contentful upload
 - The script looks for headers with the underscore character. It assumes that the first column with an underscore "bg_BG" and all following columns are locales. This means that if a column that is not a locale contains an underscore "test_header", it will assume "test_header" is a locale, and all columns after "test_header" are locales too.
 - The excel sheet must contain 'fieldID', 'entryID', and 'message' within the non-locale columns. Their order does not matter. It also does not matter how many non-locale headers there are, so long as the three required headers exist
+- If you want to updated en-US, you must include it in one of the header. Remember, if it is the first header, it must have an underscore "en_US"
 - If the sheet contains two of the same header, then the second occurrence will overwrite the first
 - Place this excel sheet into excelDocs directory
 - Be sure all locales in this document are available in the given space. If the document has locales that are not available, or not written in the same way as they are in Contentful, the script **will not work**.
