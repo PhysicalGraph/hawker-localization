@@ -1,4 +1,4 @@
-import {uploadToContentful} from '../js/uploadToContentful'
+import { uploadToContentful } from '../js/uploadToContentful'
 import config from  '~/config.json';
 import contentful from 'contentful-management';
 
@@ -52,15 +52,15 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
       // Loop here that goes over the first columns until it hits an entry with "_"
       while (!nextTargetHeader.match(/[_]/g)) {
         // this will indicate that it has gotten to the locales
-        columnNames.push(currentSheet[firstRowLetters[index]+'1']['v'])
-        nextTargetHeader = currentSheet[firstRowLetters[index +1]+'1']['v'];
+        columnNames.push(currentSheet[firstRowLetters[index]+'1']['w'])
+        nextTargetHeader = currentSheet[firstRowLetters[index +1]+'1']['w'];
         index++
       }
 
       let locales = [];
       for (var rowCount = columnNames.length; rowCount < firstRowLetters.length; rowCount++) {
-        // human redable names are stored in the sheet with the key 'v'
-        locales.push(currentSheet[firstRowLetters[rowCount]+'1']['v'])
+        // human redable names are stored in the sheet with the key 'w'
+        locales.push(currentSheet[firstRowLetters[rowCount]+'1']['w'])
       }
 
 
@@ -77,9 +77,6 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
       }
       numberOfRows = Number(numberOfRows);
       const numberOfEntires = numberOfColumns*numberOfRows
-      // const numberOfEntires = allLetterNumberEntries.length
-      // const numberOfRows = Math.floor(numberOfEntires/numberOfColumns);
-
 
       // this will loop over each row for each sheet
       // starts at 2 becuase A1 - Z1 are the named columns
@@ -96,61 +93,68 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
           let translatedMessage = currentSheet[localeLetteredNumberKey]
           let readableTranslatedMessage = "";
           if (translatedMessage != undefined) {
-            readableTranslatedMessage = translatedMessage['v']
+            readableTranslatedMessage = translatedMessage['w'];
           }
 
           // this will loop over each column for each row
-
           for (var columnRowIndex = 0; columnRowIndex < columnNames.length; columnRowIndex++) {
             let currentColumnName = columnNames[columnRowIndex];
             let letteredColumn = firstRowLetters[columnRowIndex]
             // the same numbers are apart of the same entry (A2...Z2)
             let currentKey = letteredColumn + rowIndex.toString();
             if (currentSheet[currentKey] != undefined) {
-              let cellContent = currentSheet[currentKey]['v'];
+              let cellContent = currentSheet[currentKey]['w'];
               // will save the key with spacing removed
               localeInfoToUpdate[currentColumnName.replace(/\s+/g,'')] = cellContent;
             }
-            localeInfoToUpdate.locale = currentLocale;
-            // Removes any extra spacing from the translation.
-            let isRightJustified = false;
-            if (currentLocale === 'ar_AE') {
-              isRightJustified = true;
-              localeInfoToUpdate.translation = readableTranslatedMessage;
-            } else {
-              localeInfoToUpdate.translation = readableTranslatedMessage.replace(/\s+/g,' ').trim();
+
+            let insert = (str, index, value) => {
+              return str.substr(0, index) + value + str.substr(index);
             }
 
-            if (!isRightJustified) {
+            let numsToNotNewlineon = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+            let firstNumberNewLine = readableTranslatedMessage.replace("\r\n1.", "\n \r\n1.");
+            let lastNewlineIndex = firstNumberNewLine.lastIndexOf("\r\n")
+            let chatAfterLastNewline = firstNumberNewLine[lastNewlineIndex+2]
+            // chatAfterLastNewline is a letter and not a number, meaning it is no longer part of the numbered instructions
+            if (numsToNotNewlineon.indexOf(chatAfterLastNewline) === -1) {
+              localeInfoToUpdate.translation = insert(firstNumberNewLine, lastNewlineIndex, " \n ")
+            } else {
+              localeInfoToUpdate.translation = firstNumberNewLine;
+            }
+
+            localeInfoToUpdate.locale = currentLocale;
+
               // then add correct formatting: numbers on newline, letters on newline with indent
-              let newLineCharacters = [' 1.', ' 2.', ' 3.', ' 4.', ' 5.', ' 6.', ' 7.', ' 8.', ' 9.', ' 10.']
               let indentedCharacters = [' a.', ' b.', ' c.', ' d.', ' e.', ' f.', ' g.', ' h.', ' i.', ' j.', ' б.', ' в.', ' г.']
               let translatedMessageLength = localeInfoToUpdate.translation.length;
               let newlineTranslation = '';
               let wasTranslationModified = false;
+
               for (var i = 0; i < translatedMessageLength; i++) {
-                newlineTranslation += localeInfoToUpdate.translation[i];
                 let targetCharacter = localeInfoToUpdate.translation[i] + localeInfoToUpdate.translation[i +1] + localeInfoToUpdate.translation[i + 2];
-                if (newLineCharacters.indexOf(targetCharacter) > -1) {
-                  newlineTranslation += '\n'
-                  wasTranslationModified = true
-                }
+                newlineTranslation += localeInfoToUpdate.translation[i];
+
                 if (indentedCharacters.indexOf(targetCharacter) > -1) {
+                  wasTranslationModified = true
                   newlineTranslation += '\n'
                   newlineTranslation += '\t'
                 }
               }
+
               if (wasTranslationModified) {
+                // adds newline at the end of the numbered list
                 localeInfoToUpdate.translation = newlineTranslation;
               }
-            }
 
             if (deviceInfoToUpdate.deviceEntryID === undefined) {
               deviceInfoToUpdate.deviceEntryID = localeInfoToUpdate.entryID;
             }
+
             if (deviceInfoToUpdate.message === undefined) {
               deviceInfoToUpdate.message = localeInfoToUpdate.message;
             }
+
             deviceInfoToUpdate[currentLocale] = localeInfoToUpdate;
           }
         }

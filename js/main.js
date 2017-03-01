@@ -1,4 +1,4 @@
-const pathToFile = 'excelDocs/bugTesting.xlsx';
+const pathToFile = 'excelDocs/1046.xlsx';
 import XLSX from 'xlsx';
 
 import { convertExcelToContentfulObject } from '../js/convertExcelToContentfulObject';
