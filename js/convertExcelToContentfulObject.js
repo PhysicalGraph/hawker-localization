@@ -63,7 +63,6 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
         locales.push(currentSheet[firstRowLetters[rowCount]+'1']['w'])
       }
 
-
       const numberOfColumns = columnNames.length + locales.length;
       // AA## -> and extract the number
       // ** if every cell if full - const numberOfEntires = allLetterNumberEntries/numberOfColumns
@@ -77,6 +76,9 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
       }
       numberOfRows = Number(numberOfRows);
       const numberOfEntires = numberOfColumns*numberOfRows
+      // const numberOfEntires = allLetterNumberEntries.length
+      // const numberOfRows = Math.floor(numberOfEntires/numberOfColumns);
+
 
       // this will loop over each row for each sheet
       // starts at 2 becuase A1 - Z1 are the named columns
@@ -93,7 +95,7 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
           let translatedMessage = currentSheet[localeLetteredNumberKey]
           let readableTranslatedMessage = "";
           if (translatedMessage != undefined) {
-            readableTranslatedMessage = translatedMessage['w'];
+            readableTranslatedMessage = translatedMessage['v'];
           }
 
           // this will loop over each column for each row
@@ -103,49 +105,67 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
             // the same numbers are apart of the same entry (A2...Z2)
             let currentKey = letteredColumn + rowIndex.toString();
             if (currentSheet[currentKey] != undefined) {
-              let cellContent = currentSheet[currentKey]['w'];
+              let cellContent = currentSheet[currentKey]['v'];
               // will save the key with spacing removed
               localeInfoToUpdate[currentColumnName.replace(/\s+/g,'')] = cellContent;
             }
 
             let insert = (str, index, value) => {
-              return str.substr(0, index) + value + str.substr(index);
+              if(index > str.length - 1) return str;
+              return str.substr(0,index) + value + str.substr(index+1);
             }
 
+            let firstNumberNewLine = readableTranslatedMessage.replace(/\r\n1./g, "\n \r\n1.");
             let numsToNotNewlineon = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-            let firstNumberNewLine = readableTranslatedMessage.replace("\r\n1.", "\n \r\n1.");
-            let lastNewlineIndex = firstNumberNewLine.lastIndexOf("\r\n")
-            let chatAfterLastNewline = firstNumberNewLine[lastNewlineIndex+2]
-            // chatAfterLastNewline is a letter and not a number, meaning it is no longer part of the numbered instructions
-            if (numsToNotNewlineon.indexOf(chatAfterLastNewline) === -1) {
-              localeInfoToUpdate.translation = insert(firstNumberNewLine, lastNewlineIndex, " \n ")
-            } else {
+            let indentedCharacters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'б.', 'в.', 'г.', '\\', ' ', '\t','\r', '\n']
+            let stringNewlined = false;
+            let newNewlinedString = firstNumberNewLine;
+            let newNewlinedStringWithLetterFormat = newNewlinedString
+            let newNewlinedStringWithLetterFormatLength = newNewlinedStringWithLetterFormat.length;
+            let newNewlineStringLength = newNewlinedStringWithLetterFormat.length
+
+            for (var l = 0; l < newNewlineStringLength; l++) {
+              let recentNewlineIndex = firstNumberNewLine.indexOf('\r\n', l);
+              let charAfterNewline = firstNumberNewLine[recentNewlineIndex+2];
+              // charAfterNewline is a letter and not a number, meaning it is no longer part of the numbered instructions
+              if (numsToNotNewlineon.indexOf(charAfterNewline) === -1 && indentedCharacters.indexOf(charAfterNewline) === -1 && recentNewlineIndex > -1) {
+                if (recentNewlineIndex > 0) {
+                  stringNewlined = true;
+                  newNewlinedString = insert(newNewlinedString, recentNewlineIndex, '\n')
+                }
+              }
+              newNewlineStringLength = newNewlinedString.length
+            }
+
+            if (!stringNewlined) {
               localeInfoToUpdate.translation = firstNumberNewLine;
+            } else {
+              localeInfoToUpdate.translation = newNewlinedString;
             }
 
             localeInfoToUpdate.locale = currentLocale;
 
-              // then add correct formatting: numbers on newline, letters on newline with indent
-              let indentedCharacters = [' a.', ' b.', ' c.', ' d.', ' e.', ' f.', ' g.', ' h.', ' i.', ' j.', ' б.', ' в.', ' г.']
-              let translatedMessageLength = localeInfoToUpdate.translation.length;
-              let newlineTranslation = '';
-              let wasTranslationModified = false;
+            // then add correct formatting: numbers on newline, letters on newline with indent
+            let translatedMessageLength = localeInfoToUpdate.translation.length;
+            let newlineTranslation = '';
+            let newlineEnglishMessage = '';
+            let wasTranslationModified = false;
+            let wasEnglishMessageModified = false;
 
-              for (var i = 0; i < translatedMessageLength; i++) {
-                let targetCharacter = localeInfoToUpdate.translation[i] + localeInfoToUpdate.translation[i +1] + localeInfoToUpdate.translation[i + 2];
-                newlineTranslation += localeInfoToUpdate.translation[i];
-
-                if (indentedCharacters.indexOf(targetCharacter) > -1) {
-                  wasTranslationModified = true
-                  newlineTranslation += '\n'
-                  newlineTranslation += '\t'
-                }
+            let charsToIndentOn = ['    a.', '    b.', '    c.', '    d.', '    e.', '    f.', '    g.', '    h.', '    i.', '    j.','\na.', '\nb.', '\nc', '\nd', '\ne.', '\nf.']
+            for (var i = 0; i < translatedMessageLength; i++) {
+              let targetCharacter = localeInfoToUpdate.translation[i] + localeInfoToUpdate.translation[i +1] + localeInfoToUpdate.translation[i + 2] + localeInfoToUpdate.translation[i + 3] + localeInfoToUpdate.translation[i + 4] + localeInfoToUpdate.translation[i + 5];
+              if (charsToIndentOn.indexOf(targetCharacter) > -1) {
+                wasTranslationModified = true
+                newlineTranslation += '\n'
               }
+              newlineTranslation += localeInfoToUpdate.translation[i];
+            }
 
-              if (wasTranslationModified) {
-                // adds newline at the end of the numbered list
-                localeInfoToUpdate.translation = newlineTranslation;
-              }
+            if (wasTranslationModified) {
+              // adds newline at the end of the numbered list
+              localeInfoToUpdate.translation = newlineTranslation;
+            }
 
             if (deviceInfoToUpdate.deviceEntryID === undefined) {
               deviceInfoToUpdate.deviceEntryID = localeInfoToUpdate.entryID;
