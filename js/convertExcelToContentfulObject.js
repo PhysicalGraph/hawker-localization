@@ -4,6 +4,7 @@ import contentful from 'contentful-management';
 
 
 let convertExcelToContentfulObject = (readExcelDoc) => {
+
   var client = contentful.createClient({
     accessToken: config.uploadToContentfulManagementToken
   })
@@ -63,6 +64,7 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
         locales.push(currentSheet[firstRowLetters[rowCount]+'1']['w'])
       }
 
+
       const numberOfColumns = columnNames.length + locales.length;
       // AA## -> and extract the number
       // ** if every cell if full - const numberOfEntires = allLetterNumberEntries/numberOfColumns
@@ -117,13 +119,14 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
 
             let firstNumberNewLine = readableTranslatedMessage.replace(/\r\n1./g, "\n \r\n1.");
             let numsToNotNewlineon = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-            let indentedCharacters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'б.', 'в.', 'г.', '\\', ' ', '\t','\r', '\n']
+            let indentedCharacters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', ' ']
             let stringNewlined = false;
             let newNewlinedString = firstNumberNewLine;
             let newNewlinedStringWithLetterFormat = newNewlinedString
             let newNewlinedStringWithLetterFormatLength = newNewlinedStringWithLetterFormat.length;
             let newNewlineStringLength = newNewlinedStringWithLetterFormat.length
 
+            // this loop adds a newline before a 1. and after the last string in a nested list
             for (var l = 0; l < newNewlineStringLength; l++) {
               let recentNewlineIndex = firstNumberNewLine.indexOf('\r\n', l);
               let charAfterNewline = firstNumberNewLine[recentNewlineIndex+2];
@@ -134,6 +137,7 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
                   newNewlinedString = insert(newNewlinedString, recentNewlineIndex, '\n')
                 }
               }
+
               newNewlineStringLength = newNewlinedString.length
             }
 
@@ -146,26 +150,9 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
             localeInfoToUpdate.locale = currentLocale;
 
             // then add correct formatting: numbers on newline, letters on newline with indent
-            let translatedMessageLength = localeInfoToUpdate.translation.length;
-            let newlineTranslation = '';
-            let newlineEnglishMessage = '';
-            let wasTranslationModified = false;
-            let wasEnglishMessageModified = false;
+            let translationWithBullets = localeInfoToUpdate.translation.replace(/(\s+|\t)[a-z]\./g, '\n\r  - ');
+            localeInfoToUpdate.translation = translationWithBullets;
 
-            let charsToIndentOn = ['    a.', '    b.', '    c.', '    d.', '    e.', '    f.', '    g.', '    h.', '    i.', '    j.','\na.', '\nb.', '\nc', '\nd', '\ne.', '\nf.']
-            for (var i = 0; i < translatedMessageLength; i++) {
-              let targetCharacter = localeInfoToUpdate.translation[i] + localeInfoToUpdate.translation[i +1] + localeInfoToUpdate.translation[i + 2] + localeInfoToUpdate.translation[i + 3] + localeInfoToUpdate.translation[i + 4] + localeInfoToUpdate.translation[i + 5];
-              if (charsToIndentOn.indexOf(targetCharacter) > -1) {
-                wasTranslationModified = true
-                newlineTranslation += '\n'
-              }
-              newlineTranslation += localeInfoToUpdate.translation[i];
-            }
-
-            if (wasTranslationModified) {
-              // adds newline at the end of the numbered list
-              localeInfoToUpdate.translation = newlineTranslation;
-            }
 
             if (deviceInfoToUpdate.deviceEntryID === undefined) {
               deviceInfoToUpdate.deviceEntryID = localeInfoToUpdate.entryID;
