@@ -127,10 +127,11 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
             let newNewlineStringLength = newNewlinedStringWithLetterFormat.length
 
             // this loop adds a newline before a 1. and after the last string in a nested list
+            // TODO: replace this loop with a regex
             for (var l = 0; l < newNewlineStringLength; l++) {
               let recentNewlineIndex = firstNumberNewLine.indexOf('\r\n', l);
               let charAfterNewline = firstNumberNewLine[recentNewlineIndex+2];
-              // charAfterNewline is a letter and not a number, meaning it is no longer part of the numbered instructions
+              // charAfterNewline is a letter and not a number, meaning it is a nested list and should not be newlined
               if (numsToNotNewlineon.indexOf(charAfterNewline) === -1 && indentedCharacters.indexOf(charAfterNewline) === -1 && recentNewlineIndex > -1) {
                 if (recentNewlineIndex > 0) {
                   stringNewlined = true;
@@ -150,13 +151,34 @@ let convertExcelToContentfulObject = (readExcelDoc) => {
             localeInfoToUpdate.locale = currentLocale;
 
             // then add correct formatting: numbers on newline, letters on newline with indent
-            let translationWithBullets = localeInfoToUpdate.translation.replace(/(\s+|\t)[a-z]\./g, '\n\r  - ');
+            let translationWithBullets = localeInfoToUpdate.translation.replace(/(\s+|\t)[a-zά-ωα-ωа-я]\./g, '\n\r  - ');
             localeInfoToUpdate.translation = translationWithBullets;
-
 
             if (deviceInfoToUpdate.deviceEntryID === undefined) {
               deviceInfoToUpdate.deviceEntryID = localeInfoToUpdate.entryID;
             }
+
+            // Chinese sometimes does not have the proper format
+            if (currentLocale === 'zh_CN') {
+              let newlineNumbers = ['1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.']
+              let chineseTranslation = localeInfoToUpdate.translation;
+              let newTranslation = ""
+
+              for (var stringIndex = 0; stringIndex < chineseTranslation.length; stringIndex++) {
+                let targetNewlinedCharacter = chineseTranslation[stringIndex] + chineseTranslation[stringIndex+1]
+                if (newlineNumbers.indexOf(targetNewlinedCharacter) > -1) {
+                  newTranslation += ' '
+                  newTranslation += targetNewlinedCharacter
+                  newTranslation += ' '
+                  stringIndex += 3
+                } else {
+                  newTranslation += chineseTranslation[stringIndex]
+                }
+              }
+
+              localeInfoToUpdate.translation = newTranslation
+            }
+
 
             if (deviceInfoToUpdate.message === undefined) {
               deviceInfoToUpdate.message = localeInfoToUpdate.message;
