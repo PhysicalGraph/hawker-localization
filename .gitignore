@@ -1,3 +1,9 @@
 config.json
 node_modules/*
 *.xlsx
+staticContentfulFiles/*
+missingEntires/*
+
+# exception to the rule
+!staticContentfulFiles/.gitkeep
+!missingEntires/.gitkeep
