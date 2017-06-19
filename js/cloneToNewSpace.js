@@ -3,7 +3,7 @@ import ContentfulManagement from 'contentful-management';
 import spaceExport from 'contentful-export';
 import spaceImport from 'contentful-import';
 import chalk from 'chalk';
-
+import lodash from 'lodash';
 
 let cloneToNewSpace = () => {
   const client = ContentfulManagement.createClient({
@@ -86,6 +86,8 @@ let cloneToNewSpace = () => {
       })
     })
     .then((output) => {
+      let dedupLocales = lodash.uniqBy(output.locales, 'code');
+      output.locales = dedupLocales;
       console.log(chalk.green('\n Cloned space content found \n'))
       let uploadOptions = {
         content: output,
